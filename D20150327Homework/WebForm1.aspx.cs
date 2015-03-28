@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
+using Age;
+
 namespace D20150327Homework
 {
     public partial class WebForm1 : System.Web.UI.Page
@@ -33,9 +35,20 @@ namespace D20150327Homework
                     {
                         DataTable dt = new DataTable();
                         dt.Load(dr);
+                        
+                        dr.Close();
+
+                        //add age column and calculate age
+                        dt.Columns.Add("Age", typeof(System.Int32));
+                        Calculate cal = new Calculate();
+                        foreach (DataRow data in dt.Rows)
+                        {
+                            int age = cal.getAge(Convert.ToDateTime(data["Birthday"]));
+                            data["Age"] = age;
+                        }
+
                         resultGridView.DataSource = dt;
                         resultGridView.DataBind();
-                        dr.Close();
                     }
                 }
             }
@@ -105,7 +118,6 @@ namespace D20150327Homework
 
         protected void updateIDTextBox_TextChanged(object sender, EventArgs e)
         {
-
             using (SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings["HOMEWORKConnectionString"].ConnectionString))
             {
                 cn.Open();
